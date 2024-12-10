@@ -3,16 +3,14 @@
 
 ;; Fonction d'ajout de cadeaux
 (defun add-gift (conditions &rest gifts)
-  (let ((id (gentemp "C")))
+  (let ((id (gentemp "C"))) ; Génère un identifiant temporaire unique
     (set id (list 
              (list 'conditions conditions) 
-             (list 'gifts gifts)))
-    (pushnew id *CADEAUX-SE*)
-    )
-  )
-
+             (list 'gifts gifts))) ; Associe conditions et cadeaux
+    (pushnew id *CADEAUX-SE*))) ; Ajoute l'ID à la liste *CADEAUX-SE*
 
 (format t "~%Ajout des cadeaux...")
+
 ;; Ajout des cadeaux
 ;; PETIT BUDGET
 
@@ -24,7 +22,7 @@
 (add-gift '((petitBudget)(enfant)(utilitaire)(technologie)) "Étui de protection pour tablette" "")
 (add-gift '((petitBudget)(enfant)(utilitaire)(sport)) "Gourde ludique avec design enfantin" "")
 (add-gift '((petitBudget)(enfant)(utilitaire)(lecture)) "Marque-page personnalisé" "")
-add-gift '((petitBudget)(enfant)(utilitaire)(art)) "Kit de dessin pour débutant" "")
+(add-gift '((petitBudget)(enfant)(utilitaire)(art)) "Kit de dessin pour débutant" "")
 
 ;; Enfant - Expérience
 (add-gift '((petitBudget)(enfant)(experience)(musique)) "Place de concert locale" "")
