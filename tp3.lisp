@@ -1,6 +1,19 @@
 
+(setq *CADEAUX-SE* NIL)
 
-;; Ajout des règles 
+;; Fonction d'ajout de cadeaux
+(defun add-gift (conditions &rest gifts)
+  (let ((id (gentemp "C")))
+    (set id (list 
+             (list 'conditions conditions) 
+             (list 'gifts gifts)))
+    (pushnew id *CADEAUX-SE*)
+    )
+  )
+
+
+(format t "~%Ajout des cadeaux...")
+;; Ajout des cadeaux
 ;; PETIT BUDGET
 
 ;; Bébé - Utilitaire
