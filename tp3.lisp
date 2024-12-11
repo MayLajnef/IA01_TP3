@@ -1,5 +1,6 @@
 (progn
   (setq *CADEAUX-SE* NIL)
+  (setq *RULES-SE* NIL)
 
   ;; Fonction d'ajout de cadeaux
   (defun add-gift (conditions &rest gifts)
