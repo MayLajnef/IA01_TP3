@@ -1,6 +1,8 @@
 (progn
   (setq *CADEAUX-SE* NIL)
-  (setq *RULES-SE* NIL) 
+  (setq *RULES-SE* NIL)
+  (setq *RULE* NIL)
+  (setq *CADEAUX* NIL)
 
   ;; Fonction d'ajout de cadeaux
   (defun add-gift (conditions &rest gifts)
@@ -9,8 +11,6 @@
               (list 'conditions conditions) 
               (list 'gifts gifts))) ; Associe conditions et cadeaux
       (pushnew id *CADEAUX-SE*))) ; Ajoute l'ID à la liste *CADEAUX-SE*
-
-  (format t "~%Ajout des cadeaux...")
 
   (defun add-rule (conditions conclusion)
   (let ((id (gentemp "R")))
@@ -37,8 +37,8 @@
   )
 
   ;; Ajout des cadeaux
+  (format t "~%Génération des cadeaux...")
   ;; PETIT BUDGET
-
   (add-gift '((petitBudget)(bebe)(utilitaire)) "Berceaux, Tétine ou Habits" "")
   (add-gift '((petitBudget)(bebe)(mignon)) "Peluche ou jouet" "")
   (add-gift '((petitBudget)(enfant)(utilitaire)(sport))"Habits ou matériel lié au sport" "")
