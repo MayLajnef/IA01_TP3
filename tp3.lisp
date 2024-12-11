@@ -115,8 +115,8 @@
   ;; Adolescent - Expérience
   (add-gift '((moyenBudget)(adolescent)(experience)(sport)) "Cours d'initiation à un sport" "")
   ;; Adulte - Expérience
-  (add-gift '((moyenBudget)(adulte)(experience)(voyage)(Europe)) "Billet de train direction Bruxelle" "")
-  (add-gift '((moyenBudget)(adulte)(experience)(voyage)(Europe)) "Réservation dans un hôtel pour un week-end à Rome" "")
+  (add-gift '((moyenBudget)(adulte)(experience)(voyage)(europe)) "Billet de train direction Bruxelle" "")
+  (add-gift '((moyenBudget)(adulte)(experience)(voyage)(europe)) "Réservation dans un hôtel pour un week-end à Rome" "")
   ;; Adulte - Utilitaire
   (add-gift '((moyenBudget)(adulte)(utilitaire)(cuisine)) "Robot de cuisine multifonction" "")
   (add-gift '((moyenBudget)(adulte)(utilitaire)(lecture)) "Collection de romans" "")
@@ -139,19 +139,19 @@
   (add-gift '((grosBudget)(enfant)(divertissement)(jeux)) "Console de salon dernière génération" "")
   ;; Enfant - Sentimental
   (add-gift '((grosBudget)(enfant)(sentimental)) "Chambre décorée sur mesure" "")
-  (add-gift '((grosBudget)(enfant)(sentimental)(art)) "Cours particulier d'art sur plusieurs mois" "")
+  (add-gift '((grosBudget)(enfant)(experience)(art)) "Cours particulier d'art sur plusieurs mois" "")
   ;; Adolescent - Technologie
   (add-gift '((grosBudget)(adolescent)(utilitaire)(technologie)) "Smartphone récent" "")
   ;; Adolescent - Expérience
-  (add-gift '((grosBudget)(adolescent)(experience)(voyage)(Asie)) "Séjour découverte en Inde" "")
+  (add-gift '((grosBudget)(adolescent)(experience)(voyage)(asie)) "Séjour découverte en Inde" "")
   (add-gift '((grosBudget)(adolescent)(experience)(sport)) "Stage sportif intensif international" "")
   (add-gift '((grosBudget)(adolescent)(experience)(technologie)) "Bootcamp de programmation" "")
   ;; Adulte - Expérience
-  (add-gift '((grosBudget)(adulte)(experience)(voyage)(Asie)) "Séjour au Japon tout compris" "")
+  (add-gift '((grosBudget)(adulte)(experience)(voyage)(asie)) "Séjour au Japon tout compris" "")
   ;; Adulte - Utilitaire
   (add-gift '((grosBudget)(adulte)(utilitaire)(bricolage)) "Coffret complet d'outillage électrique" "")
-  (add-gift '((grosBudget)(adulte)(utilitaire)(bricolage)(technologie)) "Atelier complet avec équipement high-tech" "")
-  (add-gift '((grosBudget)(adulte)(utilitaire)(bricolage)(art)) "Espace créatif professionnel" "")
+  (add-gift '((grosBudget)(adulte)(utilitaire)(bricolage technologie)) "Atelier complet avec équipement high-tech" "")
+  (add-gift '((grosBudget)(adulte)(utilitaire)(bricolage art)) "Espace créatif professionnel" "")
   (add-gift '((grosBudget)(adulte)(utilitaire)(habillage)) "Manteau d'hiver premium" "")
   ;; Adulte - Sentimental
   (add-gift '((grosBudget)(adulte)(sentimental)(cadeauDurable)) "Montre personnalisée haut de gamme" "")
@@ -160,7 +160,7 @@
   ;; Personne âgée - Utilitaire
   (add-gift '((grosBudget)(personneAgee)(utilitaire)) "Fauteuil électrique relaxant" "")
   (add-gift '((grosBudget)(personneAgee)(utilitaire)(technologie)) "Solution domotique complète" "")
-  (add-gift '((grosBudget)(personneAgee)(utilitaire)(technologie)(sante)) "Système de télémédecine personnalisé" "")
+  (add-gift '((grosBudget)(personneAgee)(utilitaire)(technologie sante)) "Système de télémédecine personnalisé" "")
 
   ;; Base de règle
   (format t "~%Générations de règle ...")
@@ -192,6 +192,7 @@
   (add-rule '((centreInteret eq dessinAnime)) 'dessinAnime)
   (add-rule '((centreInteret eq alcool)) 'alcool)
   (add-rule '((centreInteret eq jeux)) 'jeux)
+  (add-rule '((centreInteret eq sante)) 'sante)
   ;; Durée de vie
   (add-rule '((duree eq cadeauDurable)) 'cadeauDurable)
   ;; AJOUTER AUX CADEAUX L'ATTRIBUE VIECOURTE ??
@@ -199,10 +200,13 @@
   (add-rule '((typeJeux ep societe)) 'jeuxSociete)
   (add-rule '((typeJeux ep video)) 'jeuxVideo)
   (add-rule '((typeJeux ep video)) 'jeuxCarte)
-  ;; Type de 
+  ;; Type de relation
   (add-rule '((typeRelation eq proche)) 'proche)
   (add-rule '((typeRelation eq amoureux)) 'amoureux)
   (add-rule '((typeRelation eq ami)) 'ami)
+  ;; Zone de voyage
+  (add-rule '((locVoayge eq europe)) 'europe)
+  (add-rule '((locVoayge eq asie)) 'asie)
 
 
   (defun get-user-input (prompt options)
