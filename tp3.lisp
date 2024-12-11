@@ -11,6 +11,13 @@
 
   (format t "~%Ajout des cadeaux...")
 
+  (defun add-rule (conditions conclusion)
+  (let ((id (gentemp "R")))
+    (set id (list (list 'conditions conditions) (list 'conclusion conclusion)))
+    (pushnew id *RULES-SE*)
+    )
+  )
+
   ;; Ajout des cadeaux
   ;; PETIT BUDGET
 
@@ -177,6 +184,7 @@
   (add-gift '((grosBudget)(personneAgee)(utilitaire)(technologie)) "Solution domotique complète" "")
   (add-gift '((grosBudget)(personneAgee)(utilitaire)(technologie)(sante)) "Système de télémédecine personnalisé" "")
 
+  ;; Base de règle
 
   (defun get-user-input (prompt options)
     ;; Affiche une question et retourne la réponse choisie par l'utilisateur.
