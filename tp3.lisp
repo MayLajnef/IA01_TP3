@@ -19,6 +19,24 @@
     )
   )
 
+  ;; Fonction d'accès de rules
+  (defun getConditionRule (rule)
+    (cadr (assoc 'conditions rule))
+  )
+
+  (defun getConclusionRule (rule)
+    (cadr (assoc 'conclusion rule))
+  )
+
+  ;; Fonction d'accès des cadeaux
+  (defun getConditionGift (gift)
+    (cadr (assoc 'conditions gift))
+  )
+
+  (defun getGift (gift)
+    (cadr (assoc 'gifts gift))
+  )
+
   ;; Ajout des cadeaux
   ;; PETIT BUDGET
 
