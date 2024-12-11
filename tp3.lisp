@@ -1,6 +1,6 @@
 (progn
   (setq *CADEAUX-SE* NIL)
-  (setq *RULES-SE* NIL)
+  (setq *RULES-SE* NIL) 
 
   ;; Fonction d'ajout de cadeaux
   (defun add-gift (conditions &rest gifts)
@@ -18,8 +18,7 @@
     (pushnew id *RULES-SE*)
     )
   )
-
-  ;; Fonction d'accès de rules
+    ;; Fonction d'accès de rules
   (defun getConditionRule (rule)
     (cadr (assoc 'conditions rule))
   )
