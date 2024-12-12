@@ -136,7 +136,7 @@
   (defun ask-better-question ()
     (let ((questions NIL)(param NIL)(best-score 0)(question-to-ask NIL))
       (dolist (gift *CADEAUX*)
-        (dolist (condition (get-conditions-gift (symbol-value gift)))
+        (dolist (condition (getConditionsGift (symbol-value gift)))
           (dolist (fact condition)
             (setq questions (increment-var-to-fact fact questions))
             )
