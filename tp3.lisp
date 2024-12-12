@@ -416,10 +416,10 @@
   (add-question "Quel est l'âge de la personne à qui vous offrez le cadeau ? " 'age)
   (add-question "Quel relation entretenez-vous avec cette personne (ami, proche ou amoureux) ? " 'relation)
   (add-question "Quel type de cadeau aimeriez-vous offrir ? (utilitaire, mignon, expérience, sentimental ou divertissement)" 'typeCadeau)
-  (add-question "Souhaitez-vous offrir des habits, bijoux ou chaussures ? (OUI ou NON)" 'habillage)
+  (add-question "Souhaitez-vous offrir des habits, bijoux ou chaussures ? (OUI ou NON)" 'habillage) 
   (add-question "Quels est le principal centre d'intérêt de la personne ? (sport, art, musique, technologie, lecture, cinéma, alcoolisme, dessins-animés, jeux, bricolage, voyage, autres)" 'centre_interet)
-  (add-question "Aimeriez-vous que votre cadeau dure dans le temps ? (OUI ou NON)" 'durable)
-  (add-question "Quelle région du monde intéresse la personne ? (Europe, Asie)" 'region)
+  (add-question "Aimeriez-vous que votre cadeau dure dans le temps ? (OUI ou NON)" 'durable) ;; Question à supprimer si typeCadeau = expérience
+  (add-question "Quelle région du monde intéresse la personne ? (Europe, Asie)" 'region) ;; Question à supprimer si typeCadeau != expérience
 
   (defun get-user-input (prompt options)
     ;; Affiche une question et retourne la réponse choisie par l'utilisateur.
