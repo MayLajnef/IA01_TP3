@@ -1,4 +1,5 @@
 (progn
+   (format t "~%Ouverture du système expert de recommandations de cadeaux...")
   ;; Initialisation des variables globales du SE
   (setq *RULES-SE* NIL)
   (setq *QUESTIONS-SE* NIL)
@@ -410,7 +411,7 @@
   (add-rule '((locVoayge eq asie)) 'asie)
 
   ;; Ajout de questions
-  (format t "~%Generating questions...")
+  (format t "~%Génération de questions...")
   (add-question "Quel est votre budget ? " 'budget)
   (add-question "Quel est l'âge de la personne à qui vous offrez le cadeau ? " 'age)
   (add-question "Quel relation entretenez-vous avec cette personne (ami, proche ou amoureux) ? " 'relation)
