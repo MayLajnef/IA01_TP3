@@ -57,10 +57,11 @@
   (defun get-question (question)
     (cadr (assoc 'QUESTION question))
     )
-   (defun get-response-var (question)
-    (cadr (assoc 'RESPONSE question))
-    )
-  
+   ;; Fonction nécessaire pour stocker la réponse de l'utilisateur dans une variable spécifique
+    (defun get-response-var (question)
+      "Retourne la variable associée à une question."
+      (cadr question)) ;; La variable est toujours en deuxième position (voir les appels de add-question)
+
   ;; Fonction qui pose une question
   (defun ask-question (question)
     (format t "~%~S~%> " (get-question question)) ;; Pose la question
