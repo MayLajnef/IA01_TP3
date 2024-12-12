@@ -367,9 +367,9 @@
   ;; Base de règle
   (format t "~%Générations de règle ...")
   ;; Budget
-  (add-rules '((budget < 50)) 'petitBudget)
-  (add-rules '((budget >= 50)(budget <= 300)) 'moyenBudget)
-  (add-rules '((budget > 300)) 'grosBudget)
+  (add-rule '((budget < 50)) 'petitBudget)
+  (add-rule '((budget >= 50)(budget <= 300)) 'moyenBudget)
+  (add-rule '((budget > 300)) 'grosBudget)
   ;; Age
   (add-rule '((age < 3)) 'bebe)
   (add-rule '((age >= 3)(age < 12)) 'enfant)
