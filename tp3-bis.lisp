@@ -317,7 +317,7 @@
   (add-rule '((locVoyage eq asie)) 'asie)
 
   ;; Ajout de questions
-  (format t "~%Génération de questions...")
+  (format t "~%Génération de questions...~%")
   (add-question "Quel est votre budget ? " 'budget)
   (add-question "Quel est l'âge de la personne à qui vous offrez le cadeau ? " 'age)
   (add-question "Quel relation entretenez-vous avec cette personne (ami, proche ou amoureux) ? " 'typeRelation)
