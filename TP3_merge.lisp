@@ -541,10 +541,6 @@
     (terpri)
     (read)
   )
-    
-  (defun recommend (item)
-    "Affiche une recommandation à l'utilisateur."
-  (format t "Recommandation : ~a~%" item))
 
 (chainage-avant)
 
