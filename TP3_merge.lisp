@@ -71,7 +71,7 @@
 
     (defun check-rule (rule)
       (let ((to-delete 0)(execute 1))
-        (dolist (condition (getConclusionRule rule)) ;; Pour chaque condition ET de la regle
+        (dolist (condition (getconditionRule rule)) ;; Pour chaque condition ET de la regle
           (if (is-fact-defined  (car condition)) ;; On regarde si la variable est definie
               (progn 
                 (setq execute (* (check-condition condition) execute)) ;; On check la du test
@@ -80,6 +80,8 @@
               (setq execute 0)    
               )
           )
+        ;;(format t "~%Execute ~a" execute)
+        ;;(format t "~%Delete ~a" to-delete)
         (if (= execute 1) (progn (execute-rule rule)(desactive-rule rule))) ;; On execute eventuellement la regle si toutes les conditions sont valides
         (if (= to-delete 1)(desactive-rule rule)) ;; On supprime la regle si au moins un test est 0, ou si tous les tests sont valides
         execute
@@ -90,7 +92,7 @@
         (if (member fact *FACTS*) T NIL)
     )
 
-    (defun check-rules ()
+    (defun checkRules ()
         (let ((executed NIL))
         (dolist (rule *rules* T) ;; Pour chaque regle
             (if (= (check-rule (symbol-value rule)) 1) (setq executed T)) ;; On verifie la regle
@@ -99,8 +101,9 @@
       )
     )
 
-    (defun check-condition (condition)
-        (if (funcall (cadr condition) (symbol-value (car condition)) (caddr condition)) 1 0)
+    (defun check-condition (condition) 
+      ;; Renvoi 1 si la condition est validé, 0 sinon
+      (if (funcall (cadr condition) (symbol-value (car condition)) (caddr condition)) 1 0)
     )
 
     (defun ask-question (question)
@@ -132,6 +135,15 @@
 
    (defun desactive-gift (gift)
     (setf *CADEAUX* (delete-if #'(lambda (item) (eq (symbol-value item) gift)) *CADEAUX*))
+    )
+
+    (defun is-fact-possible (fact)
+    (let ((possible NIL))
+      (dolist (rule *rules*) ;; Pour chaque regle
+        (if (equal (getconclusionrule (symbol-value rule)) fact) (setq possible T)) ;; On regarde si la conclusion correspond au fait recherche
+        )
+      possible
+      )
     )
 
      (defun is-condition-possible (condition)
@@ -168,16 +180,16 @@
               (setq possible NIL)
               (if (not (is-condition-possible condition)) ;; On verifie si elle est encore possible (pour etre validee), si elle ne peut pas etre validee, on la supprime
                   (setq to-delete T)
-                )
               )
+            )
           )
         )
       (if to-delete (desactive-gift gift)) 
       possible
-      )
     )
+  )
   
-  (defun check-activities ()
+  (defun check-gifts ()
     (let ((act NIL))
       (dolist (gift *CADEAUX*) ;; Pour chaque activite
         (if (check-gift (symbol-value gift)) (setq act gift)) ;; On la "met a jour" (supprime si elle ne pourra jamais etre atteinte)
@@ -185,7 +197,7 @@
       (if (= (length *CADEAUX*) 1) (setq act (car *CADEAUX*))) ;; S'il ne reste qu'une activite, on la renvoit
       act
     )
-    )
+  )
   
   ;; Fonction permettant de trouver la prochaine question � poser
   (defun ask-better-question ()
@@ -260,9 +272,9 @@
         (if (not (ask-better-question)) (setq end T) ;; S'il n'y a plus de questions a poser, on met end a vrai
           (progn 
             (loop ;; Tant que des r�gles sont activ�es, on regarde si on peut activer de nouvelles r�gles
-             (when (not (check-rules)) (return T))
+             (when (not (checkRules)) (return T))
               )
-            (setq gift (check-activities)) ;; On regarde si une activit� match avec les faits
+            (setq gift (check-gifts)) ;; On regarde si une activit� match avec les faits
             (if gift (setq end T)) ;; Si oui, on met fin a vrai
             )
           )   
@@ -492,5 +504,14 @@
   (defun recommend (item)
     "Affiche une recommandation à l'utilisateur."
     (format t "Recommandation : ~a~%" item))
-    (chainage-avant)
+  ;;(chainage-avant)
+
+(defvar test NIL)
+(setq test (symbol-value (car *rules-se*)))
+(format t "~%~a" test)
+
+(setq test (checkRules))
+(format t "~%~a" test)
+
+(chainage-avant)
 )
