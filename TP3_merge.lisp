@@ -166,8 +166,9 @@
     (if (member fact *FACTS*) T NIL)
   )
   
-  (defun is-condition-approved (condition)
-    (format t "~%~a" condition)
+  (defun isConditionApproved (condition)
+  ;; Fonction qui retourne True si la condition est validée, sinon NIL (peut-être doublon avec la précédente)
+  ;; Je n'ai pas encore testé en détail si dans nos appels on avait des listes de contitions ou pas
     (let ((approved NIL))
       (dolist (fact condition)
         (if (isFactApproved fact) (setq approved T))
@@ -175,31 +176,32 @@
     )
   )
   
-  
-  ;; Fonction pour v�rifier si activit� est possible
-  (defun check-gift (gift)
-    (let ((possible T)(to-delete NIL))
-      (dolist (condition (getConditionGift gift)) ;; Pour chaque conditions ET des activites
-        (if (not (is-condition-approved condition)) ;; On verifie si la condition est valide
-            (progn 
-              (setq possible NIL)
-              (if (not (isConditionPossible condition)) ;; On verifie si elle est encore possible (pour etre validee), si elle ne peut pas etre validee, on la supprime
-                  (setq to-delete T)
-              )
+  (defun checkGift (gift)
+  ;; Fonction qui test les conditions d'un cadeau
+  ;; si l'une d'entre elle n'est pas validée et n'est plus atteignable, on le supprimer des cadeaux potentiels
+    (let ((approved T)(to-delete NIL))
+      (dolist (condition (getConditionGift gift))
+        (if (not (isConditionApproved condition))
+          (progn
+            (setq approved NIL)
+            (if (not (isConditionPossible condition))
+              (setq to-delete T)
             )
           )
         )
-      (if to-delete (desactiveGift gift)) 
-      possible
+      )
+      (if to-delete (desactiveGift gift))
+      approved
     )
   )
   
-  (defun check-gifts ()
+  (defun checkGifts ()
+  ;; Fonction qui test tous les cadeaux et qui renvoit le cadeau s'il n'en reste qu'un
     (let ((cadeau NIL))
-      (dolist (gift *CADEAUX*) ;; Pour chaque activite
-        (if (check-gift (symbol-value gift)) (setq cadeau gift)) ;; On la "met a jour" (supprime si elle ne pourra jamais etre atteinte)
+      (dolist (gift *CADEAUX*)
+        (if (checkGift (symbol-value gift)) (setq cadeau gift))
         )
-      (if (= (length *CADEAUX*) 1) (setq cadeau (car *CADEAUX*))) ;; S'il ne reste qu'une activite, on la renvoit
+      (if (= (length *CADEAUX*) 1) (setq cadeau (car *CADEAUX*)))
       cadeau
     )
   )
@@ -280,7 +282,7 @@
             (loop ;; Tant que des r�gles sont activ�es, on regarde si on peut activer de nouvelles r�gles
              (when (not (checkRules)) (return T))
             )
-            (setq gift (check-gifts)) ;; On regarde si une activit� match avec les faits
+            (setq gift (checkGifts)) ;; On regarde si une activit� match avec les faits
             (if gift (setq end T)) ;; Si oui, on met fin a vrai
             )
           )   
