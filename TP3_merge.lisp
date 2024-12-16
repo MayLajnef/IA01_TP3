@@ -291,14 +291,14 @@
          (when end (return gift)) ;; On quitte quitte la boucle quand fin est vrai, sinon on repete les etapes
         )
         (if gift  ;; Affichage de l'activite si elle est existante
-            (progn (format t "~%~%###################################~%~%Nous avons trouv� une activit� qui pourrait vous convenir !")
-             (format t "~%Il s'agit de l'activit� ~S" (getGift (symbol-value gift)))
+            (progn (format t "~%~%###################################~%~%Nous n'avons pas trouvé de cadeau qui pourrait vous convenir !")
+             (format t "~%Il s'agit du cadeau :~S" (getGift (symbol-value gift)))
              (format t "~%~S" (getdescriptiongift (symbol-value gift)))
             )
-         (format t "~%~%###################################~%~%Nous n'avons malheureusement pas trouv� d'activit� pour vous...~%(les activites les plus proches de vos envies se situent dans la liste *CADEAUX*)")
+         (format t "~%~%###################################~%~%Nous n'avons malheureusement pas trouvé de cadeau pour vous...~%(les activites les plus proches de vos envies se situent dans la liste *CADEAUX*)")
         )
       )
-    (format t "~%~%~%Lancez � nouveau (chainage-avant) ou (chainage-arriere) pour re-essayer le SE ~%")
+    (format t "~%~%~%Lancez à nouveau (chainage-avant)pour re-essayer le SE !~%")
     )
 
   ;; Ajout des cadeaux
@@ -518,10 +518,6 @@
   (defun recommend (item)
     "Affiche une recommandation à l'utilisateur."
   (format t "Recommandation : ~a~%" item))
-
-(defvar test NIL)
-(setq test (symbol-value (car *questions-se*)))
-(format t "~%~a" test)
 
 (chainage-avant)
 
