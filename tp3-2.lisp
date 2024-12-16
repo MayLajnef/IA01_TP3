@@ -81,6 +81,7 @@
   (let* ((texte (first question))
          (fact (second question)))
     (format t "~a " texte)
+    (clear-input)
     (let ((response (read)) (value nil))
       (cond
        ((equal fact 'budget)
@@ -91,5 +92,21 @@
         (update-fact fact value))))
 
 ;;; Réadaption du ask-better-question avec la mise en oeuvre du "Qui est-ce ?"
+;; Algorithme de ask-better-question
+;; Initialiser faits-inconnus à la liste des faits qui valent NIL dans *FACTS*
+;; Initialiser fait-inconnu-le-plus-fréquent à nil
+;; Initialiser liste-frequences à nil
+;; Pour chaque fait-inconnu dans faits-inconnus 
+    (Calculer sa fréquence d'apparition dans *RULES-SE*)
+    ;; Initialiser un compteur à 0;
+    ;; Pour chaque règle dans *RULES-SE*
+        ;; Si fait-inconnu est un fait apparaissant dans la prémisse de la règle
+            ;; Incrémenter le compteur
+    ;; Ajouter (cons fait-inconnu compteur) à liste-frequences
+    ;; Déterminer le maximum des fréquences de liste-frequences et affecter fait-inconnu-le-plus-fréquent au fait-inconnu associé
+    ;; Initialiser appropriate-question à la question associée à fait-inconnu-le-plus-fréquent
+    ;; (ask-question appropriate-question)
+;; 
+    
 ;;; ...
 )
