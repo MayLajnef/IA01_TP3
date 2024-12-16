@@ -1,238 +1,142 @@
-(progn
-   (format t "~%Ouverture du système expert de recommandations de cadeaux...")
-  ;; Initialisation des variables globales du SE
-  
-  (defvar *RULES-SE* NIL)
-  (defvar *QUESTIONS-SE* NIL)
-  (defvar *CADEAUX-SE* NIL)
-  (defvar *RULES* NIL)
-  (defvar *QUESTIONS* NIL)
-  (defvar *CADEAUX* NIL)
-  (defvar *FACTS* NIL)
+(progn(defvar *facts* nil)
+(defvar *rules* nil)
+(defvar *gifts* nil)
+(defvar *questions* nil)
+(defvar *cadeaux-se* nil)
 
-  ;; Fonction d'ajout de cadeaux
-  (defun add-gift (conditions &rest gifts)
-    (let ((id (gentemp "C"))) ; Génère un identifiant temporaire unique
-      (set id (list 
-              (list 'conditions conditions) 
-              (list 'gifts gifts))) ; Associe conditions et cadeaux
-      (pushnew id *CADEAUX-SE*))) ; Ajoute l'ID à la liste *CADEAUX-SE*
-  
-  ;; REGLES
-  (defun add-rule (conditions conclusion)
-  (let ((id (gentemp "R")))
-    (set id (list (list 'conditions conditions) (list 'conclusion conclusion)))
-    (pushnew id *RULES-SE*)
-    )
-  )
-    ;; Fonction d'accès de rules
-  (defun getConditionRule (rule)
-    (cadr (assoc 'conditions rule))
-  )
+(defun add-fact (fact)
+  (push fact *facts*))
 
-  (defun getConclusionRule (rule)
-    (cadr (assoc 'conclusion rule))
-  )
+(defun add-rule (premises conclusion)
+  "Ajoute une règle après validation des prémisses."
+  (unless (every (lambda (premise)
+                   (or (symbolp (car premise)) (error "Premise invalide: ~a" premise)))
+                 premises)
+    (error "Les prémisses doivent être des symboles valides."))
+  (push (list :premises premises :conclusion conclusion) *rules*))
 
-  ;; Fonction d'accès des cadeaux
-  (defun getConditionGift (gift)
-    (cadr (assoc 'conditions gift))
-  )
 
-  (defun getGift (gift)
-    (cadr (assoc 'gifts gift))
-  )
+(defun add-gift (conditions &rest gifts)
+  (push (list :conditions conditions
+              :gifts gifts)
+        *cadeaux-se*))
 
-    ;; QUESTIONS
 
-  ;; Fonction d'ajout de question spécifique au système de cadeaux
-  (defun add-question (question response)
-    (let ((id (gentemp "Q")))
-      (set id (list (list 'question question) (list 'response response)))
-      (pushnew id *QUESTIONS-SE*)
-      )
-    )
-  
-  ;; Définition de fonctions d'accès
-  (defun get-question (question)
-    (cadr (assoc 'QUESTION question))
-    )
-    ;; Fonction nécessaire pour stocker la réponse de l'utilisateur dans une variable spécifique
-    (defun get-response-var (question)
-      "Retourne le fait associé à une question."
-      (cadr question)) ;; Le fait est toujours en deuxième position (voir les appels de add-question ci-dessous)
-    ;; Test 
-    (get-response-var  '("Quel est votre budget ?" budget)) ; → budget
 
-  ;; Fonction qui pose une question
-  (defun ask-question (question)
-    (format t "~%~S~%> " (get-question question)) ;; Pose la question
-    (clear-input)
-    (set (get-response-var question) (read)) ;; Lis la reponse
-    (pushnew (get-response-var question) *FACTS*) ;; Enregistre la reponse
-    (setf *QUESTIONS* (delete-if #'(lambda (item) (eq (symbol-value item) question)) *QUESTIONS*)) ;; Supprime la question posee
-    )
-    
-  
-  ;; Fonction de désactivation d'un cadeau
-  (defun desactive-gift (gift)
-    (setf *CADEAUX* (delete-if #'(lambda (item) (eq (symbol-value item) gift)) *CADEAUX*))
-    )
+(defun add-question (question fact)
+  (push (list :question question :fact fact) *questions*))
 
-    (defun is-fact-possible (fact)
-    (let ((possible NIL))
-      (dolist (rule *RULES*)
-        (if (equal (getConclusionRule (symbol-value rule)) fact) (setq possible T))
-        )
-      possible
-      )
-    )
-  
-  (defun is-condition-possible (condition)
-    (let ((possible NIL))
-      (dolist (fact condition)
-        (if (is-fact-possible fact) (setq possible T))
-        )
-      possible
-      )
-    )
-  
-  (defun is-fact-approved (fact)
-    (if (member fact *FACTS*) T NIL)
-    )
-  
-  (defun is-condition-approved (condition)
-    (let ((approved NIL))
-      (dolist (fact condition)
-        (if (is-fact-approved fact) (setq approved T))
-        )
-      approved
-      )
-    )
-  
-  (defun check-gift (gift)
-    (let ((possible T)(to-delete NIL))
-      (dolist (condition (getConditionGift gift))
-        (if (not (is-condition-approved condition))
-            (progn 
-              (setq possible NIL)
-              (if (not (is-condition-possible condition))
-                  (setq to-delete T)
-                )
-              )
-          )
-        )
-      (if to-delete (desactive-gift gift)) 
-      possible
-      )
-    )
-  
-  (defun check-gifts ()
-    (let ((gift NIL))
-      (dolist (g *CADEAUX*)
-        (if (check-gift (symbol-value g)) (setq gift g))
-        )
-      (if (= (length *CADEAUX*) 1) (setq gift (car *CADEAUX*)))
-      gift
-    )
-    )
-  
-  (defun ask-better-question ()
-    (let ((questions NIL)(param NIL)(best-score 0)(question-to-ask NIL))
-      (dolist (gift *CADEAUX*)
-        (dolist (condition (getConditionsGift (symbol-value gift)))
-          (dolist (fact condition)
-            (setq questions (increment-var-to-fact fact questions))
-            )
-          )
-        )
-      (dolist (q questions)
-        (if (>= (cadr q) best-score)
-            (progn
-              (setq best-score (cadr q))
-              (setq question-to-ask (car q))
-              )
-        )
-        )
-      (if question-to-ask (progn (ask-question (symbol-value question-to-ask)) T) NIL)
-      )
-    )
-  
-  (defun increment-var-to-fact (fact variables)
-    (let ((variables-r variables)) 
-    (dolist (rule *RULES*)
-      (if (eq ( getConditionRule (symbol-value rule)) fact)
-          (progn 
-            (dolist (condition ( getConditionRule (symbol-value rule)))
-              (setq variables-r (increment-question-priority variables-r (car condition)))
-              )
-            )
-        )
-      )
-      variables-r
-      )
-    )
-  
-  (defun increment-question-priority (variables param)
-    (let ((variables-r variables)(tmp NIL))
-      (dolist (question *QUESTIONS*)
-        (if (eq (get-response-var (symbol-value question)) param)
-            (if (assoc question variables-r)
-                (progn
-                  (setf tmp (cadr (assoc question variables-r)))
-                  (setf (cadr (assoc question variables-r)) (+ tmp 1))
-                 )
-              (pushnew (list question 1) variables-r)
-              )
-          )
-        )
-      variables-r
-      )
-    )
-  
-  ;; Chaînage avant pour recommander des cadeaux
-  (defun chainage-avant ()
-    (setf *RULES* (copy-list *RULES-SE*))
-    (setf *FACTS* NIL)
-    (setf *QUESTIONS* (copy-list *QUESTIONS-SE*))
-    (setf *CADEAUX*  (copy-list *CADEAUX-SE*))
-    (let (
-          (end NIL)
-          (gift NIL)
-          )
-      (loop
-        (if (not (ask-better-question)) (setq end T)
-          (progn 
-            (loop
-             (when (not (check-rules)) (return T))
-              )
-            (setq gift (check-gifts))
-            (if gift (setq end T))
-            )
-          )   
-         (when end (return gift))
-        )
-       (if gift
-           (progn 
-             (format t "~%~%###################################~%~%Nous avons trouvé un cadeau qui pourrait lui plaire !")
-             (format t "~%Il s'agit de : ~S" (getGift (symbol-value gift)))
-             )
-         (format t "~%~%###################################~%~%Nous n'avons malheureusement pas trouvé de cadeau idéal pour cette personne...")
-         )
-      )
-    (format t "~%~%~%Relancez (chainage-avant) pour une nouvelle recommandation ~%")
-    )
+(defun ask-question (question fact)
+  (format t "~a ~%" question)
+  (let ((answer (read)))
+    (cond
+      ((and (equal fact 'age) (numberp answer))
+       (cond
+         ((<= answer 2)  (add-fact (cons fact 'bebe)))
+         ((<= answer 13) (add-fact (cons fact 'enfant)))
+         ((<= answer 19) (add-fact (cons fact 'adolescent)))
+         ((<= answer 59) (add-fact (cons fact 'adulte)))
+         (t              (add-fact (cons fact 'personneAgee)))))
+      ((and (equal fact 'budget) (numberp answer))
+       (cond
+         ((<= answer 50)  (add-fact (cons fact 'petitBudget)))
+         ((<= answer 300) (add-fact (cons fact 'moyenBudget)))
+         (t               (add-fact (cons fact 'grosBudget)))))
+      ((equal fact 'typeCadeau)
+       (add-fact (cons fact (intern (string-upcase answer)))))
+      (t (add-fact (cons fact answer))))))
 
-  ;; Ajout des cadeaux
+(defun valid-numberp (value)
+  "Vérifie si la valeur est un nombre réel valide."
+  (and (not (null value)) (numberp value)))
+
+(defun applicable-rule-p (rule)
+  "Vérifie si les prémisses d'une règle sont satisfaites dans *facts*."
+  (every (lambda (premise)
+           (let ((fact (cdr (assoc (car premise) *facts*)))) ; Récupérer la valeur du fait
+             (cond
+               ;; Si une comparaison numérique est attendue
+               ((member (cadr premise) '(< <= > >=))
+                (and (valid-numberp fact) (eval `(,fact ,(cadr premise) ,(caddr premise)))))
+               ;; Sinon, pour des tests d'égalité
+               (t (equal fact (caddr premise))))))
+         (getf rule :premises)))
+
+
+(defun apply-rule (rule)
+  (add-fact (getf rule :conclusion)))(defun forward-chaining ()
+  "Applique les règles pour déduire de nouveaux faits jusqu'à ce qu'aucun nouveau fait ne puisse être inféré."
+  (let ((new-facts nil))
+    (loop
+      (setf new-facts nil)
+      (dolist (rule *rules*)
+        (when (and (applicable-rule-p rule)
+                   (not (member (getf rule :conclusion) *facts* :test #'equal)))
+          (apply-rule rule)
+          (push (getf rule :conclusion) new-facts)))
+      (when (null new-facts) (return)))))
+
+(defun filter-questions ()
+  (let ((order '(budget age typeCadeau centreInteret typeRelation typeJeux locVoyage duree sentimental experience)))
+    (setf *questions*
+          (stable-sort
+           (remove-if (lambda (question)
+                        (let ((fact (getf question :fact)))
+                          (or (assoc fact *facts* :test #'equal) ; Fact already answered
+                              (and (equal fact 'typeRelation) ; Irrelevant question
+                                   (not (equal (cdr (assoc 'typeCadeau *facts*)) 'sentimental)))
+                              (and (equal fact 'locVoyage)
+                                   (not (equal (cdr (assoc 'centreInteret *facts*)) 'voyage)))
+                              (and (equal fact 'duree)
+                                   (equal (cdr (assoc 'typeCadeau *facts*)) 'experience))
+                              (and (equal fact 'typeJeux)
+                                   (not (equal (cdr (assoc 'centreInteret *facts*)) 'jeux))))))
+                      *questions*) ; Remove irrelevant questions
+           #'<
+           :key (lambda (q) (position (getf q :fact) order))))))
+
+
+(defun recommend-gifts ()
+  (let ((filtered-gifts
+         (remove-if-not
+          (lambda (gift)
+            (every (lambda (criterion)
+                     (member criterion *facts* :test #'equal))
+                   (getf gift :criteria)))
+          *gifts*)))
+    (if filtered-gifts
+        (dolist (gift filtered-gifts)
+          (format t "~a~%" (getf gift :description)))
+        (format t "Echec de la recherche.~%"))))
+
+(defun run-expert-system ()
+  "Lance le système expert."
+  ;; Initialiser les faits nécessaires avec des questions
+  (loop
+    (filter-questions)
+    (if *questions*
+        (let ((question (pop *questions*)))
+          (ask-question (getf question :question) (getf question :fact)))
+        (return)))  ; Quitte la boucle si toutes les questions ont été posées
+  ;; Effectuer l'inférence
+  (forward-chaining)
+  ;; Recommander les cadeaux
+  (recommend-gifts))
+
+
+
+
+;; Ajout des cadeaux
   (format t "~%Ajout des cadeaux...")
   ;; PETIT BUDGET
+
   (add-gift '((petitBudget)(bebe)(utilitaire)) "Berceaux, Tétine ou Habits" "")
   (add-gift '((petitBudget)(bebe)(mignon)) "Peluche ou jouet" "")
   (add-gift '((petitBudget)(enfant)(utilitaire)(sport))"Habits ou matériel lié au sport" "")
   (add-gift '((petitBudget)(enfant)(utilitaire)(art))"Matériel de dessin ou de peinture" "")
   (add-gift '((petitBudget)(enfant)(utilitaire)(musique))"Ecouteur" "")
   (add-gift '((petitBudget)(enfant)(utilitaire)(lecture))"Marque Page" "")
-  (add-gift '((petitBudget)(enfant)(utilitaire)(technologie))"Kano" "Apprenez à coder à l'aide de jeu ludique, le tout dans un petit ordinateur à monter")
+  (add-gift '((petitBudget)(enfant)(utilitaire)(technologie))"Kano" "")
   (add-gift '((petitBudget)(enfant)(utilitaire)(autre))"Habits" "")
   (add-gift '((petitBudget)(enfant)(sentimental))"Album photo" "")
   (add-gift '((petitBudget)(enfant)(experience)(sport))"Place pour un match de son équipe favorite" "")
@@ -413,7 +317,7 @@
   (add-rule '((locVoyage eq asie)) 'asie)
 
   ;; Ajout de questions
-  (format t "~%Génération de questions...")
+  (format t "~%Génération de questions...~%")
   (add-question "Quel est votre budget ? " 'budget)
   (add-question "Quel est l'âge de la personne à qui vous offrez le cadeau ? " 'age)
   (add-question "Quel relation entretenez-vous avec cette personne (ami, proche ou amoureux) ? " 'typeRelation)
@@ -424,15 +328,4 @@
   (add-question "Quelle région du monde intéresse la personne ? (Europe, Asie)" 'locVoyage)
   (add-question "Quel type de jeu souhaitez-vous offrir ? (société, carte, vidéo)" 'typeJeux)
 
-  (defun get-user-input (prompt options)
-    ;; Affiche une question et retourne la réponse choisie par l'utilisateur.
-    (format t "~a ~%" prompt)
-    (dolist (option options)
-      (format t "~a " option))
-    (terpri)
-    (read))
-    
-  (defun recommend (item)
-    "Affiche une recommandation à l'utilisateur."
-    (format t "Recommandation : ~a~%" item))
-)
+(run-expert-system))
