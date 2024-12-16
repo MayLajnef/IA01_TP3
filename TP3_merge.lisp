@@ -173,6 +173,7 @@
       (dolist (fact condition)
         (if (isFactApproved fact) (setq approved T))
       )
+      approved
     )
   )
   
@@ -184,7 +185,7 @@
         (if (not (isConditionApproved condition))
           (progn
             (setq approved NIL)
-            (if (not (isConditionPossible condition))
+            (if (not (isConditionPossible condition)) ;; potentiel problème dans la fonction isconditionpossible
               (setq to-delete T)
             )
           )
@@ -206,7 +207,8 @@
     )
   )
   
-  ;; Fonction permettant de trouver la prochaine question � poser
+  ;; Gestion des questions pour poser la meilleure à chaque fois
+
   (defun ask-better-question ()
     (let ((questions NIL)(param NIL)(best-score 0)(question-to-ask NIL))
       (dolist (gift *CADEAUX*) ;; On parcours toutes les activites
@@ -236,13 +238,13 @@
           (progn 
             (dolist (condition (getConditionRule (symbol-value rule))) ;; Alors, pour toutes les conditions de cette regle, on incremente la question relative a la condition
               (setq variables-r (increment-question-priority variables-r (car condition)))
-              )
+            )
             )
         )
       )
       variables-r
       )
-    )
+  )
   
   ;; Fonction qui cherche la question a incr�menter
   (defun increment-question-priority (variables param)
@@ -288,13 +290,13 @@
           )   
          (when end (return gift)) ;; On quitte quitte la boucle quand fin est vrai, sinon on repete les etapes
         )
-       (if gift  ;; Affichage de l'activite si elle est existante
-           (progn (format t "~%~%###################################~%~%Nous avons trouv� une activit� qui pourrait vous convenir !")
+        (if gift  ;; Affichage de l'activite si elle est existante
+            (progn (format t "~%~%###################################~%~%Nous avons trouv� une activit� qui pourrait vous convenir !")
              (format t "~%Il s'agit de l'activit� ~S" (getGift (symbol-value gift)))
              (format t "~%~S" (getdescriptiongift (symbol-value gift)))
-             )
+            )
          (format t "~%~%###################################~%~%Nous n'avons malheureusement pas trouv� d'activit� pour vous...~%(les activites les plus proches de vos envies se situent dans la liste *CADEAUX*)")
-         )
+        )
       )
     (format t "~%~%~%Lancez � nouveau (chainage-avant) ou (chainage-arriere) pour re-essayer le SE ~%")
     )
@@ -313,7 +315,7 @@
   (addGift '((petitBudget)(enfant)(utilitaire)(autre))"Habits" "")
   (addGift '((petitBudget)(enfant)(sentimental))"Album photo" "")
   (addGift '((petitBudget)(enfant)(experience)(sport))"Place pour un match de son équipe favorite" "")
-  (addGift '((petitBudget)(enfant)(experience)(msuique))"Place de concert" "")
+  (addGift '((petitBudget)(enfant)(experience)(musique))"Place de concert" "")
   (addGift '((petitBudget)(enfant)(experience)(jeux))"Session d'escape Game" "")
   (addGift '((petitBudget)(enfant)(experience)(art))"Entrée pour un musé ou une exposition" "")
   (addGift '((petitBudget)(enfant)(experience)(dessinAnime))"Place de cinéma (dessin animé)" "")
@@ -474,6 +476,9 @@
   (addRule '((centreInteret eq alcool)) 'alcool)
   (addRule '((centreInteret eq jeux)) 'jeux)
   (addRule '((centreInteret eq sante)) 'sante)
+  (addRule '((centreInteret eq musique)) 'musique)
+  (addRule '((centreInteret eq lecture)) 'lecture)
+
   ;; Durée de vie
   (addRule '((duree eq cadeauDurable)) 'cadeauDurable)
   ;; AJOUTER AUX CADEAUX L'ATTRIBUE VIECOURTE ??
@@ -507,15 +512,17 @@
     (dolist (option options)
       (format t "~a " option))
     (terpri)
-    (read))
+    (read)
+  )
     
   (defun recommend (item)
     "Affiche une recommandation à l'utilisateur."
   (format t "Recommandation : ~a~%" item))
-  ;;(chainage-avant)
 
-;;(defvar test NIL)
-;;(setq test (symbol-value (car *rules-se*)))
+(defvar test NIL)
+(setq test (symbol-value (car *questions-se*)))
+(format t "~%~a" test)
 
 (chainage-avant)
+
 )
