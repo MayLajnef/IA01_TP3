@@ -265,7 +265,7 @@
     )
   
   
-  (format t "~%Lancez le (chainage-avant) ou (chainage-arriere) pour essayer le SE ~%")
+  (format t "~%Lancez le (chainage-avant) pour essayer le SE ~%")
   
   ;; ########### BOUCLE PRINCIPALE CHAINAGE AVANT ########### 
   (defun chainage-avant ()
@@ -295,10 +295,10 @@
              (format t "~%Il s'agit du cadeau :~S" (getGift (symbol-value gift)))
              (format t "~%~S" (getdescriptiongift (symbol-value gift)))
             )
-         (format t "~%~%###################################~%~%Nous n'avons malheureusement pas trouvé de cadeau pour vous...~%(les activites les plus proches de vos envies se situent dans la liste *CADEAUX*)")
+         (format t "~%~%###################################~%~%Nous n'avons malheureusement pas trouvé de cadeau pour vous...~%(les cadeaux les plus proches de vos envies se situent dans la liste *CADEAUX*)")
         )
       )
-    (format t "~%~%~%Lancez à nouveau (chainage-avant)pour re-essayer le SE !~%")
+    (format t "~%~%~%Lancez à nouveau (chainage-avant) pour re-essayer le SE !~%")
     )
 
   ;; Ajout des cadeaux
@@ -312,7 +312,7 @@
   (addGift '((petitBudget)(enfant)(utilitaire)(musique))"Ecouteur" "")
   (addGift '((petitBudget)(enfant)(utilitaire)(lecture))"Marque Page" "")
   (addGift '((petitBudget)(enfant)(utilitaire)(technologie))"Kano" "Apprenez à coder à l'aide de jeu ludique, le tout dans un petit ordinateur à monter")
-  (addGift '((petitBudget)(enfant)(utilitaire)(autre))"Habits" "")
+  (addGift '((petitBudget)(enfant)(utilitaire)(autres))"Habits" "")
   (addGift '((petitBudget)(enfant)(sentimental))"Album photo" "")
   (addGift '((petitBudget)(enfant)(experience)(sport))"Place pour un match de son équipe favorite" "")
   (addGift '((petitBudget)(enfant)(experience)(musique))"Place de concert" "")
@@ -332,7 +332,7 @@
   (addGift '((petitBudget)(adolescent)(utilitaire)(art))"Matériel de dessin ou de peinture" "")
   (addGift '((petitBudget)(adolescent)(utilitaire)(musique))"Ecouteur" "")
   (addGift '((petitBudget)(adolescent)(utilitaire)(lecture))"Marque page" "")
-  (addGift '((petitBudget)(adolescent)(utilitaire)(autre))"Habit" "")
+  (addGift '((petitBudget)(adolescent)(utilitaire)(autres))"Habit" "")
   (addGift '((petitBudget)(adolescent)(experience)(technologie))"Entrée dans un musée technologique" "")
   (addGift '((petitBudget)(adolescent)(experience)(sport))"Place pour un match de son équipe favorite" "")
   (addGift '((petitBudget)(adolescent)(experience)(musique))"Place pour un concert" "")
@@ -435,7 +435,8 @@
   (addGift '((grosBudget)(adulte)(utilitaire)(bricolage)) "Coffret complet d'outillage électrique" "")
   (addGift '((grosBudget)(adulte)(utilitaire)(bricolage technologie)) "Atelier complet avec équipement high-tech" "")
   (addGift '((grosBudget)(adulte)(utilitaire)(bricolage art)) "Espace créatif professionnel" "")
-  (addGift '((grosBudget)(adulte)(utilitaire)(habillage)) "Manteau d'hiver premium" "")
+  (addGift '((grosBudget)(adulte)(utilitaire)(autres)(habillage)) "Manteau d'hiver premium" "")
+  (addGift '((grosBudget)(adulte)(utilitaire)(autres)) "Test" "")
   ;; Adulte - Sentimental
   (addGift '((grosBudget)(adulte)(sentimental)(cadeauDurable)) "Montre personnalisée haut de gamme" "")
   ;; Personne âgée - Sentimental
@@ -468,7 +469,7 @@
   (addRule '((centreInteret eq sport)) 'sport)
   (addRule '((centreInteret eq art)) 'art)
   (addRule '((centreInteret eq cinema)) 'cinema)
-  (addRule '((centreInteret eq autre)) 'autre)
+  (addRule '((centreInteret eq autres)) 'autres)
   (addRule '((centreInteret eq voyage)) 'voyage)
   (addRule '((centreInteret eq cuisine)) 'cuisine)
   (addRule '((centreInteret eq bricolage)) 'bricolage)
@@ -493,6 +494,7 @@
   ;; Zone de voyage
   (addRule '((locVoyage eq europe)) 'europe)
   (addRule '((locVoyage eq asie)) 'asie)
+  (addRule '((habillage eq oui)) 'habillage)
 
   ;; Ajout de questions
   (format t "~%Génération de questions...")
@@ -502,7 +504,7 @@
   (addQuestion "Souhaitez-vous offrir des habits, bijoux ou chaussures ? (OUI ou NON)" 'habillage) 
   (addQuestion "Quel type de cadeau aimeriez-vous offrir ? (utilitaire, mignon, expérience, sentimental ou divertissement)" 'typeCadeau)
   (addQuestion "Quels est le principal centre d'intérêt de la personne ? (sport, art, musique, technologie, lecture, cinéma, alcoolisme, dessins-animés, jeux, bricolage, voyage, autres)" 'centreInteret)
-  (addQuestion "Aimeriez-vous que votre cadeau dure dans le temps ? (OUI ou NON)" 'duree) ;; Question à supprimer si typeCadeau = expérience
+  (addQuestion "Aimeriez-vous que votre cadeau dure dans le temps ? (OUI ou NON)" 'duree)
   (addQuestion "Quelle région du monde intéresse la personne ? (Europe, Asie)" 'locVoyage)
   (addQuestion "Quel type de jeu souhaitez-vous offrir ? (société, carte, vidéo)" 'typeJeux)
 
