@@ -9,6 +9,8 @@
   (defvar *QUESTIONS* NIL)
   (defvar *CADEAUX* NIL)
   (defvar *FACTS* NIL)
+  (defvar *CADEAUX-PRECEDENT* NIL)
+
 
   ;; Fonction d'ajout de cadeaux
   (defun addGift (conditions &rest gifts)
@@ -41,7 +43,7 @@
   )
 
   (defun getGift (gift)
-    (cadr (assoc 'gifts gift))
+    (caadr (assoc 'gifts gift))
   )
   (defun getDescriptionGift (gift)
     (cadr (assoc 'description gift))
@@ -210,59 +212,70 @@
   ;; Gestion des questions pour poser la meilleure à chaque fois
 
   (defun ask-better-question ()
+  ;; Fonction principale gérant l'incrémentation du score des questions
+  ;; Principe simple pour chaque cadeaux restants on regarde tous les faites qui restent à clarifier
+  ;; Et on incrémente la question qui y correspond de 1
+
     (let ((questions NIL)(param NIL)(best-score 0)(question-to-ask NIL))
-      (dolist (gift *CADEAUX*) ;; On parcours toutes les activites
-        (dolist (condition (getConditionGift (symbol-value gift))) ;; Pour chaque condition ET des activites 
-          (dolist (fact condition) ;; Pour chaque condition OU des activites
-            (setq questions (increment-var-to-fact fact questions)) ;; On incremente le compteur question permettant de clarifier le fait de la condition
-            )
+      (dolist (gift *CADEAUX*)
+        (dolist (condition (getConditionGift (symbol-value gift)))
+          (dolist (varCondition condition)
+            (setq questions (varConditionToRules varCondition questions))
           )
         )
-      (dolist (q questions) ;; On cherche la question avec le meilleur score
+      )
+
+      ;; Recherche la question avec le meilleur score
+      (dolist (q questions)
         (if (>= (cadr q) best-score)
             (progn
               (setq best-score (cadr q))
               (setq question-to-ask (car q))
               )
         )
-        )
-      (if question-to-ask (progn (askQuestion (symbol-value question-to-ask)) T) NIL) ;; On pose la question si elle existe et on retourne T, NIL sinon
       )
+      (if question-to-ask (progn (askQuestion (symbol-value question-to-ask)) T) NIL) ;; On pose la question si elle existe et on retourne T, NIL sinon
     )
+  )
   
-  ;; Fonction qui incr�mente les variables questions n�cessaires pour activer une r�gle menant au but
-  (defun increment-var-to-fact (fact variables)
-    (let ((variables-r variables)) 
+  (defun varConditionToRules (fact scoreQuestions)
+  ;; Dans cette fonction on se charge de trouver depuis la variable condition du cadeau
+  ;; De trouver la règle qui va nous permettre de clarifier 
+
+    (let ((tmpScoreQuestions scoreQuestions)) 
     (dolist (rule *rules*) ;; Pour toutes les regles
       (if (eq (getconclusionrule (symbol-value rule)) fact) ;; Si la conclusion de la regle mene au fait que l'on cherche
           (progn 
             (dolist (condition (getConditionRule (symbol-value rule))) ;; Alors, pour toutes les conditions de cette regle, on incremente la question relative a la condition
-              (setq variables-r (increment-question-priority variables-r (car condition)))
+              (setq tmpScoreQuestions (upVoteQuestion tmpScoreQuestions (car condition)))
             )
             )
         )
       )
-      variables-r
+      tmpScoreQuestions
       )
   )
   
-  ;; Fonction qui cherche la question a incr�menter
-  (defun increment-question-priority (variables param)
-    (let ((variables-r variables)(tmp NIL))
-      (dolist (question *questions*) ;; Pour toutes les questions
-        (if (eq (getReponseVar (symbol-value question)) param) ;; Si la variable de stockage de la reponse et identique a celle du parametre de la condition
-            (if (assoc question variables-r)
-                (progn    ;; On incremente le compteur associe a la question s'il existe
-                  (setf tmp (cadr (assoc question variables-r)))
-                  (setf (cadr (assoc question variables-r)) (+ tmp 1))
-                 )
-              (pushnew (list question 1) variables-r) ;; Ou on l'initialise a 1
-              )
+  (defun upVoteQuestion (scoreQuestions condition)
+  ;; Fonction qui incrémente la priorité des questions ou l'initialise à 1
+  ;; Pour se faire on prend en paramètre le score actuel des questions ainsi qu'une condition d'une règle validant un fait de cadeau restant
+  ;; On parcourt la liste de question pour trouver la questions correspondante et on l'incrémente
+
+    (let ((tmpScoreQuestions scoreQuestions))
+      (dolist (question *questions*)
+        (if (eq (getReponseVar (symbol-value question)) condition)
+          (if (assoc question tmpScoreQuestions)
+              ;; Si la question est déjà dans les scores on l'incrémente
+              (setf (cadr (assoc question tmpScoreQuestions)) (+ 1 (cadr (assoc question tmpScoreQuestions))))
+              ;; Sinon on lui créé un score
+              (pushnew (list question 1) tmpScoreQuestions)
           )
         )
-      variables-r
       )
+      (format t "~%~a" tmpscorequestions)
+      tmpScoreQuestions    
     )
+  )
   
   
   (format t "~%Lancez le (chainage-avant) pour essayer le SE ~%")
@@ -278,24 +291,36 @@
           (gift NIL)
           )
       (loop
-        (format t "~%~a" *cadeaux*)
+        (if *CADEAUX*
+          (setf *CADEAUX-PRECEDENT* (copy-list *CADEAUX*))
+        )
+
         (if (not (ask-better-question)) (setq end T) ;; S'il n'y a plus de questions a poser, on met end a vrai
           (progn 
             (loop ;; Tant que des r�gles sont activ�es, on regarde si on peut activer de nouvelles r�gles
-             (when (not (checkRules)) (return T))
+              ;; Une seule fois dedans ?
+              (when (not (checkRules)) (return T))
             )
             (setq gift (checkGifts)) ;; On regarde si une activit� match avec les faits
             (if gift (setq end T)) ;; Si oui, on met fin a vrai
             )
-          )   
+          )
          (when end (return gift)) ;; On quitte quitte la boucle quand fin est vrai, sinon on repete les etapes
         )
         (if gift  ;; Affichage de l'activite si elle est existante
-            (progn (format t "~%~%###################################~%~%Nous n'avons pas trouvé de cadeau qui pourrait vous convenir !")
-             (format t "~%Il s'agit du cadeau :~S" (getGift (symbol-value gift)))
-             (format t "~%~S" (getdescriptiongift (symbol-value gift)))
+          (progn (format t "~%~%###################################~%~%Nous avons trouvé le cadeau qui pourrait vous convenir !")
+            (format t "~%Il s'agit du cadeau :~S" (getGift (symbol-value gift)))
+            (format t "~%~S" (getdescriptiongift (symbol-value gift)))
+          )
+          
+          (progn 
+            (format t "~%cadeaux précédent :~a" *cadeaux-precedent*)
+            (format t "~%~%###################################~%~%Nous n'avons malheureusement pas trouvé de cadeau pour vous...~%")
+            (format t "Voici une suggestion de cadeau qui pourrait vous intérésser~%")
+            (dolist (suggestionCadeau *CADEAUX-PRECEDENT*)
+              (format t "~%~S" (getGift (symbol-value suggestioncadeau)))
             )
-         (format t "~%~%###################################~%~%Nous n'avons malheureusement pas trouvé de cadeau pour vous...~%(les cadeaux les plus proches de vos envies se situent dans la liste *CADEAUX*)")
+          )
         )
       )
     (format t "~%~%~%Lancez à nouveau (chainage-avant) pour re-essayer le SE !~%")
