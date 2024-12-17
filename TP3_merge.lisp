@@ -126,18 +126,6 @@
         (cadr (assoc 'RESPONSE question))
     )
 
-    #| (defun ask-gift ()
-    (let ((act NIL)(returnID NIL))
-      (format t "~%Indiquez le nom du cadeau dont vous voulez vérifier si elle vous convient~%> ") ;; Pose la question pour savoir l'activit�
-      (clear-input)
-     (setq act (read))
-     (dolist (gift *CADEAUX*) ;; Cherche l'activit� dans la base d'activit�s
-       (if (equal (getGift (symbol-value gift)) act) (setq returnID gift))
-       )
-     returnID
-     )
-   ) |#
-
   (defun desactiveGift (gift)
   ;; Fonction qui supprime un cadeaux de la base de recherche
     (setf *CADEAUX* (delete-if #'(lambda (item) (eq (symbol-value item) gift)) *CADEAUX*))
@@ -211,7 +199,7 @@
   
   ;; Gestion des questions pour poser la meilleure à chaque fois
 
-  (defun ask-better-question ()
+  (defun askBestQuestion ()
   ;; Fonction principale gérant l'incrémentation du score des questions
   ;; Principe simple pour chaque cadeaux restants on regarde tous les faites qui restent à clarifier
   ;; Et on incrémente la question qui y correspond de 1
@@ -276,11 +264,8 @@
     )
   )
   
-  
-  (format t "~%Lancez le (chainage-avant) pour essayer le SE ~%")
-  
   ;; ########### BOUCLE PRINCIPALE CHAINAGE AVANT ########### 
-  (defun chainage-avant ()
+  (defun chainageAvant ()
     (setf *RULES* (copy-list *RULES-SE*))
     (setf *FACTS* NIL)
     (setf *QUESTIONS* (copy-list *QUESTIONS-SE*))
@@ -294,27 +279,25 @@
           (setf *CADEAUX-PRECEDENT* (copy-list *CADEAUX*))
         )
 
-        (if (not (ask-better-question)) (setq end T) ;; S'il n'y a plus de questions a poser, on met end a vrai
+        (if (not (askBestQuestion)) (setq end T)
           (progn 
-            (loop ;; Tant que des r�gles sont activ�es, on regarde si on peut activer de nouvelles r�gles
-              ;; Une seule fois dedans ?
+            (loop
               (when (not (checkRules)) (return T))
             )
-            (setq gift (checkGifts)) ;; On regarde si une activit� match avec les faits
-            (if gift (setq end T)) ;; Si oui, on met fin a vrai
+            (setq gift (checkGifts))
+            (if gift (setq end T))
             )
           )
-         (when end (return gift)) ;; On quitte quitte la boucle quand fin est vrai, sinon on repete les etapes
+         (when end (return gift))
         )
-        (if gift  ;; Affichage de l'activite si elle est existante
-          (progn (format t "~%~%###################################~%~%Nous avons trouvé le cadeau qui pourrait vous convenir !")
+        (if gift
+          (progn (format t "~%---------------------------------~%Un cadeau semble vous correspondre !")
             (format t "~%Il s'agit du cadeau :~S" (getGift (symbol-value gift)))
             (format t "~%~S" (getdescriptiongift (symbol-value gift)))
           )
           
           (progn 
-            (format t "~%cadeaux précédent :~a" *cadeaux-precedent*)
-            (format t "~%~%###################################~%~%Nous n'avons malheureusement pas trouvé de cadeau pour vous...~%")
+            (format t "~%---------------------------------~%Aucun cadeau n'a été trouvé :/~%")
             (format t "Voici une suggestion de cadeau qui pourrait vous intérésser~%")
             (dolist (suggestionCadeau *CADEAUX-PRECEDENT*)
               (format t "~%~S" (getGift (symbol-value suggestioncadeau)))
@@ -322,7 +305,6 @@
           )
         )
       )
-    (format t "~%~%~%Lancez à nouveau (chainage-avant) pour re-essayer le SE !~%")
     )
 
   ;; Ajout des cadeaux
@@ -508,9 +490,9 @@
   (addRule '((duree eq cadeauDurable)) 'cadeauDurable)
   ;; AJOUTER AUX CADEAUX L'ATTRIBUE VIECOURTE ??
   ;; Type de jeu
-  (addRule '((typeJeux eq societe)) 'jeuxSociete)
-  (addRule '((typeJeux eq video)) 'jeuxVideo)
-  (addRule '((typeJeux eq video)) 'jeuxCarte)
+  (addRule '((typeJeux eq societe)) 'societe)
+  (addRule '((typeJeux eq video)) 'video)
+  (addRule '((typeJeux eq carte)) 'carte)
   ;; Type de relation
   (addRule '((typeRelation eq proche)) 'proche)
   (addRule '((typeRelation eq amoureux)) 'amoureux)
@@ -541,6 +523,6 @@
     (read)
   )
 
-(chainage-avant)
+(chainageAvant)
 
 )
