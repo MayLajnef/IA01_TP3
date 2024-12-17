@@ -14,11 +14,13 @@
 
   ;; Fonction d'ajout de cadeaux
   (defun addGift (conditions &rest gifts)
-    (let ((id (gentemp "C"))) ; Génère un identifiant temporaire unique
+    (let ((id (gentemp "C")))
       (set id (list 
               (list 'conditions conditions) 
-              (list 'gifts gifts))) ; Associe conditions et cadeaux
-      (pushnew id *CADEAUX-SE*))) ; Ajoute l'ID à la liste *CADEAUX-SE*
+              (list 'gifts gifts)))
+      (pushnew id *CADEAUX-SE*)
+    )
+  )
   
   ;; REGLES
   (defun addRule (conditions conclusion)
@@ -56,19 +58,19 @@
     (let ((id (gentemp "Q")))
       (set id (list (list 'question question) (list 'response response)))
       (pushnew id *QUESTIONS-SE*)
-      )
     )
+  )
 
     (defun desactiveRule (rule)
     ;; Fonction qui supprime de *RULES* une règle passé en paramètre
-        (setf *RULES* (delete-if #'(lambda (item) (eq (symbol-value item) rule)) *RULES*))
+      (setf *RULES* (delete-if #'(lambda (item) (eq (symbol-value item) rule)) *RULES*))
     )
     
     (defun executeRule (rule)
     ;; Fonction qui ajoute une conclusion à notre ensemble de fait
-        (let ((conclusion (getConclusionRule rule)))
+      (let ((conclusion (getConclusionRule rule)))
         (pushnew conclusion *FACTS*)
-        )
+      )
     )
 
     (defun checkRule (rule)
@@ -82,18 +84,18 @@
             )
             (setq execute 0)    
           )
-          )
+        )
         ;; Execute la règle (ajoute sa conclusion à *FACTS* et supprime la règle de *RULES*) si besoin
         (if (= execute 1) (progn (executeRule rule)(desactiveRule rule)))
 
         ;; Suppression de la règle si ces conditions ne sont pas remplis
         (if (= to-delete 1)(desactiveRule rule))
         execute
-        )
+      )
     )
 
     (defun isFactDefined (fact)
-        (if (member fact *FACTS*) T NIL)
+      (if (member fact *FACTS*) T NIL)
     )
 
     (defun checkRules ()
@@ -216,10 +218,10 @@
       ;; Recherche la question avec le meilleur score
       (dolist (q questions)
         (if (>= (cadr q) best-score)
-            (progn
-              (setq best-score (cadr q))
-              (setq question-to-ask (car q))
-              )
+          (progn
+            (setq best-score (cadr q))
+            (setq question-to-ask (car q))
+          )
         )
       )
       (if question-to-ask (progn (askQuestion (symbol-value question-to-ask)) T) NIL) ;; On pose la question si elle existe et on retourne T, NIL sinon
@@ -518,7 +520,8 @@
     ;; Affiche une question et retourne la réponse choisie par l'utilisateur.
     (format t "~a ~%" prompt)
     (dolist (option options)
-      (format t "~a " option))
+      (format t "~a " option)
+    )
     (terpri)
     (read)
   )
