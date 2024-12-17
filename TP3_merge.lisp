@@ -272,7 +272,6 @@
           )
         )
       )
-      (format t "~%~a" tmpscorequestions)
       tmpScoreQuestions    
     )
   )
